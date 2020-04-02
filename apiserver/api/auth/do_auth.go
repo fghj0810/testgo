@@ -8,41 +8,35 @@ import (
 	"strings"
 )
 
+type userInfo struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 func HandleFunction(w http.ResponseWriter, r *http.Request) {
 	encoder := json.NewEncoder(w)
 	ret := make(map[string]interface{}, 5)
-	var username string = ""
-	var password string = ""
+	var info userInfo = userInfo{"", ""}
 	if r.Method != "POST" {
 		ret["code"] = common.Code_InvalidAPI
 		encoder.Encode(ret)
 		return
 	}
 	if r.ContentLength > 0 {
-		if reader, err := r.MultipartReader(); err != nil {
+		j := json.NewDecoder(r.Body)
+		err := j.Decode(&info)
+		if err != nil {
 			ret["code"] = common.Code_InvalidAPI
 			encoder.Encode(ret)
 			return
 		} else {
-			if form, err2 := reader.ReadForm(64); err2 != nil {
-				ret["code"] = common.Code_InvalidAPI
-				encoder.Encode(ret)
-				return
-			} else {
-				for k, v := range form.Value {
-					switch k {
-					case "username":
-						username = strings.TrimSpace(v[0])
-					case "password":
-						password = strings.TrimSpace(v[0])
-					}
-				}
-			}
+			info.Username = strings.TrimSpace(info.Username)
+			info.Password = strings.TrimSpace(info.Password)
 		}
 	}
-	if username != "" && password != "" {
+	if info.Username != "" && info.Password != "" {
 		// 用户名密码登录
-		if uid, ok := db.Login(username, password); ok {
+		if uid, ok := db.Login(info.Username, info.Password); ok {
 			sid, err := db.SessionNew(uid)
 			if err != nil {
 				ret["code"] = common.Code_Auth_NewSessionError

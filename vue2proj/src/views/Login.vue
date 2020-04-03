@@ -4,16 +4,13 @@
             <div class="form-horizontal login">
                 <div class="logo">客服工具</div>
                 <div class="form-group input-group input-group-lg ">
-                    <span class="input-group-addon"><i class="fa fa-user-o" aria-hidden="true"></i></span>
-                    <input type="text" class=" form-control" placeholder="username" v-model="userInfo.username">
+                    <el-input v-model="userInfo.username" placeholder="请输入用户名"></el-input>
                 </div>
                 <div class="form-group input-group input-group-lg">
-                    <span class="input-group-addon"><i class="fa fa-key" aria-hidden="true"></i></span>
-                    <input type="password" class=" form-control" placeholder="password" v-model="userInfo.password">
+                    <el-input placeholder="请输入密码" v-model="userInfo.password" show-password></el-input>
                 </div>
                 <div class="form-group">
-                    <button class="form-control" @click="doLogin">登 录</button>
-                    <!--<button class="btn btn-default btn-sm form-control login-btn" @click="doLogin">登 录</button>-->
+                    <el-button type="primary" round @click="doLogin">登 录</el-button>
                 </div>
             </div>
         </div>
@@ -22,56 +19,55 @@
 
 <script>
     import axios from 'axios';
+
     export default {
         name: 'login',
-        data () {
+        data() {
             return {
-                userInfo :{
-                    username : '',
-                    password : '',
+                userInfo: {
+                    username: '',
+                    password: '',
                 },
-                show : false,
+                show: false,
             }
         },
-        methods : {
-            doLogin (){
-                if (this.userInfo.username == ''){
+        methods: {
+            doLogin() {
+                if (this.userInfo.username == '') {
                     alert('用户名不能为空');
                     return false
                 }
-                if (this.userInfo.password == ''){
+                if (this.userInfo.password == '') {
                     alert('密码名不能为空');
                     return false
                 }
-                axios.post('/auth/do_auth',JSON.stringify(this.userInfo))
+                axios.post('/api/auth/do_auth', JSON.stringify(this.userInfo))
                     .then(res => {
                         console.log(res)
-                        if(res.status == 200){
-                            console.log(res.data)
-                            // this.$store.commit('setToken',res.data);
-                            // localStorage.userName = this.userInfo.userName;
-                            // localStorage.token_expire = res.data.expire;
-                            // localStorage.token = res.data.token;
-                            // this.$notify({
-                            //     title : '提示信息',
-                            //     message : '登录成功',
-                            //     type : 'success'
-                            // });
-                            // this.$router.push({path:'/'})
-                        }else {
-                            console.log("请求失败")
+                        if (res.status == 200) {
+                            if (res.data.code == 0) {
+                                this.$store.commit('setUserInfo', {username: res.data.username, token: res.data.token})
+                                this.$router.push({path: '/'})
+                            } else if (res.data.code == 10005) {
+                                alert("用户名或密码不正确")
+                            } else {
+                                alert("登录失败")
+                            }
+                        } else {
+                            alert("登录失败")
                         }
                     })
                     .catch(err => {
+                        alert("登录异常")
                         console.log(err)
                     })
             }
         },
-        mounted (){
-            var wi=window.screen.width;
-            var hi=window.screen.height;
-            document.getElementById("bg").style.width=wi+"px";
-            document.getElementById("bg").style.height=hi+"px";
+        mounted() {
+            var wi = window.screen.width;
+            var hi = window.screen.height;
+            document.getElementById("bg").style.width = wi + "px";
+            document.getElementById("bg").style.height = hi + "px";
         },
     }
 </script>
@@ -84,7 +80,7 @@
     /*background-size:100% 100%*/
     /*}*/
     .login {
-        position:absolute;
+        position: absolute;
         top: 50%;
         left: 50%;
         -webkit-transform: translate(-50%, -50%);
@@ -95,9 +91,11 @@
         width: 400px;
 
     }
+
     .login-btn {
         background-color: whitesmoke;
     }
+
     .logo {
         font-family: "DejaVu Sans Mono";
         color: lightblue;

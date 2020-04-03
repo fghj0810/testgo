@@ -22,6 +22,7 @@ func HandleFunction(w http.ResponseWriter, r *http.Request) {
 		encoder.Encode(ret)
 		return
 	}
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	if r.ContentLength > 0 {
 		j := json.NewDecoder(r.Body)
 		err := j.Decode(&info)
@@ -43,6 +44,8 @@ func HandleFunction(w http.ResponseWriter, r *http.Request) {
 			} else {
 				ret["code"] = common.Code_Success
 				ret["message"] = "账号登录成功"
+				ret["username"] = info.Username
+				ret["token"] = sid
 				// 设置cookie
 				cookie := http.Cookie{Name: "SID", Value: sid, Path: "/", MaxAge: 24 * 60 * 60}
 				http.SetCookie(w, &cookie)
@@ -55,9 +58,12 @@ func HandleFunction(w http.ResponseWriter, r *http.Request) {
 		if cookie, err := r.Cookie("SID"); err != nil {
 			ret["code"] = common.Code_Auth_SessionError
 		} else {
-			if db.ValidUidAndSid(db.SessionDecode(cookie.Value), cookie.Value) {
+			tmpUid := db.SessionDecode(cookie.Value)
+			if db.ValidUidAndSid(tmpUid, cookie.Value) {
 				ret["code"] = common.Code_Success
 				ret["message"] = "session登录成功"
+				ret["username"] = tmpUid
+				ret["token"] = cookie.Value
 				// 设置cookie
 				cookie := http.Cookie{Name: "SID", Value: cookie.Value, Path: "/", MaxAge: 24 * 60 * 60}
 				http.SetCookie(w, &cookie)

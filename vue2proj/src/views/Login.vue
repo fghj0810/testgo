@@ -47,7 +47,7 @@
                         if (res.status == 200) {
                             if (res.data.code == 0) {
                                 this.$store.commit('setUserInfo', {username: res.data.username, token: res.data.token})
-                                this.$router.push({path: '/'})
+                                this.$router.push({path: '/mail'})
                             } else if (res.data.code == 10005) {
                                 alert("用户名或密码不正确")
                             } else {

@@ -1,22 +1,29 @@
 <template>
-    <div>
-        <el-input v-model="input" placeholder="用户ID"></el-input>
-        <el-input v-model="input" placeholder="邮件标题"></el-input>
-        <el-input
-                type="textarea"
-                :rows="2"
-                placeholder="请输入邮件内容"
-                v-model="textarea">
-        </el-input>
-    </div>
+    <el-container>
+        <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+            <el-menu align="left">
+                <el-menu-item index="1"><i class="el-icon-message"/>向单个用户发送邮件</el-menu-item>
+                <el-menu-item index="2"><i class="el-icon-message"/>向全体用户发送邮件</el-menu-item>
+                <el-menu-item index="2"><i class="el-icon-message"/>查询邮件</el-menu-item>
+            </el-menu>
+        </el-aside>
+
+        <el-container>
+            <el-main style="background-color: rgb(238, 241, 246)">
+                <send-mail-to-one-user/>
+                <send-mail-to-all/>
+            </el-main>
+        </el-container>
+    </el-container>
 </template>
 
 <script>
+    import SendMailToOneUser from "./mail/SendMailToOneUser.vue";
     import SendMailToAll from "./mail/SendMailToAll";
 
     export default {
         name: "Mail",
-        components: {SendMailToAll},
+        components: {SendMailToOneUser, SendMailToAll},
         data() {
             const item = {
                 date: '2016-05-02',

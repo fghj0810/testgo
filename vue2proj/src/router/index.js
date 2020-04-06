@@ -22,7 +22,10 @@ const routes = [
     {
         path: '/mail',
         name: 'Mail',
-        component: () => import(/* webpackChunkName: "about" */ '../views/Mail.vue')
+        component: () => import(/* webpackChunkName: "about" */ '../views/Mail.vue'),
+        meta: {
+            requireAuth: true
+        }
     },
     {
         path: '/about',

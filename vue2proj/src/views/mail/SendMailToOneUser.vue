@@ -2,9 +2,6 @@
     <div>
         <el-input v-model="userId" placeholder="用户ID"></el-input>
         <el-input v-model="title" placeholder="邮件标题"></el-input>
-        <el-input v-model="beginTime" placeholder="开始时间"></el-input>
-        <el-input v-model="endTime" placeholder="截止时间"></el-input>
-        <el-input v-model="limitSceneId" placeholder="场景ID，通关过该场景才能收到邮件。无限制则填0"></el-input>
         <el-input
                 type="textarea"
                 :rows="20"
@@ -33,14 +30,11 @@
 
 <script>
     export default {
-        name: "SendMailToAll",
+        name: "SendMailToOneUser",
         data() {
             return {
                 userId: '',
                 title: '',
-                beginTime: '',
-                endTime: '',
-                limitSceneId: '',
                 context: '',
                 items: [{itemId: 1, itemNum: 10}, {itemId: 2, itemNum: 10}]
             }

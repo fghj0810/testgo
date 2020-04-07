@@ -7,7 +7,7 @@ import App from './App.vue'
 import 'element-ui/lib/theme-chalk/index.css';
 
 Vue.use(ElementUI)
-axios.defaults.baseURL = "http://localhost:9090"
+axios.defaults.baseURL = "https://rwtools.ledo.h-games.cn"
 
 Vue.config.productionTip = false
 

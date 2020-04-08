@@ -1,10 +1,11 @@
 <template>
     <div align="left">
         <div>
-            <el-input v-model="userId" placeholder="用户ID" style="width: 150px"></el-input>
+            <el-input v-model="userId" placeholder="用户ID" style="width: 150px" type="text"></el-input>
+            <span v-show="checkUserId">用户ID不合法</span>
         </div>
         <div>
-            <el-input v-model="title" placeholder="邮件标题"></el-input>
+            <el-input v-model="title" placeholder="邮件标题" type="text"></el-input>
         </div>
         <el-input
                 type="textarea"
@@ -26,47 +27,66 @@
                     </el-button>
                 </template>
                 <template slot-scope="scope">
-                    <el-button @click.native.prevent="handleDelete(scope.$index, scope.raw)" type="danger">
+                    <el-button @click.native.prevent="handleDelete(scope.$index)" type="danger">
                         移除
                     </el-button>
                 </template>
             </el-table-column>
         </el-table>
         <div style="margin-top: 50px">
-            <el-button @click="handleSendMsgClicked">发送</el-button>
+            <el-button @click="handleSendMsgClicked" type="primary">发送</el-button>
+            <el-popover
+                    placement="top"
+                    width="160"
+                    v-model="visible">
+                <p>确定发送吗？</p>
+                <div style="text-align: right; margin: 0">
+                    <el-button size="mini" type="text" @click="visible = false">取消</el-button>
+                    <el-button type="primary" size="mini" @click="visible = false">确定</el-button>
+                </div>
+                <el-button slot="reference">删除</el-button>
+            </el-popover>
         </div>
-        <add-item-dialog :dialog-visible.sync="addItemDialogVisible" v-on:onAddItem="handleAddItem" />
+        <add-item-dialog :dialog-visible.sync="addItemDialogVisible" v-on:onAddItem="handleAddItem"/>
     </div>
 </template>
 
 <script>
     import AddItemDialog from "../common/AddItemDialog";
+
     export default {
         name: "SendMailToOneUser",
         components: {AddItemDialog},
-        comments : {AddItemDialog},
+        comments: {AddItemDialog},
         data() {
             return {
                 userId: '',
                 title: '',
                 context: '',
                 hasItems: false,
-                items: [{itemId: 1, itemNum: 10}, {itemId: 2, itemNum: 10}, {itemId: 2, itemNum: 10}],
-                addItemDialogVisible : false
+                items: [],
+                addItemDialogVisible: false
             }
         },
         methods: {
-            handleDelete(index, row) {
-                console.log(index, row);
+            handleDelete(index) {
                 this.items.splice(index, 1);
+            },
+            handleAddItem(event) {
+                this.items.push({itemId: event.itemId, itemNum: event.itemNum})
             },
             handleSendMsgClicked(event) {
                 console.log(event);
-            },
-            handleAddItem(event) {
-                console.log(event);
-                event.itemId = 100
+            }
+        },
+        computed: {
+            checkUserId: function () {
+                let reg = new RegExp("^[0-9]*$")
+                return !reg.test(this.userId)
             }
         }
     }
 </script>
+
+<style scoped>
+</style>

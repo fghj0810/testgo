@@ -24,7 +24,7 @@
                 dVisible: this.dialogVisible,
                 itemId: '',
                 itemNum: '',
-                dataInvalid: false
+                // dataInvalid: false
             }
         },
         methods: {
@@ -33,14 +33,23 @@
             },
             handleOKClicked() {
                 this.$emit('update:dialogVisible', false)
-                var arg = { itemId:this.itemId, itemNum:this.itemNum}
+                let arg = {itemId: this.itemId, itemNum: this.itemNum}
                 this.$emit('onAddItem', arg)
-                console.log(arg.itemId)
+            }
+        },
+        computed: {
+            dataInvalid: function () {
+                return !(parseInt(this.itemId) > 0 && parseInt(this.itemNum) > 0);
             }
         },
         watch: {
             dialogVisible(val) {
-                this.dVisible = val
+                if (val != this.dVisible) {
+                    this.dVisible = val
+                }
+            },
+            dVisible(val) {
+                this.$emit('update:dialogVisible', val)
             }
         }
     }

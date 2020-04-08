@@ -35,29 +35,22 @@
         </el-table>
         <div style="margin-top: 50px">
             <el-button @click="handleSendMsgClicked" type="primary">发送</el-button>
-            <el-popover
-                    placement="top"
-                    width="160"
-                    v-model="visible">
-                <p>确定发送吗？</p>
-                <div style="text-align: right; margin: 0">
-                    <el-button size="mini" type="text" @click="visible = false">取消</el-button>
-                    <el-button type="primary" size="mini" @click="visible = false">确定</el-button>
-                </div>
-                <el-button slot="reference">删除</el-button>
-            </el-popover>
         </div>
         <add-item-dialog :dialog-visible.sync="addItemDialogVisible" v-on:onAddItem="handleAddItem"/>
+        <waiting-for-me :dialog-visible.sync="waitingDialog.visible"
+                        :body-message="waitingDialog.message"
+                        :can-close="waitingDialog.canClose"/>
     </div>
 </template>
 
 <script>
     import AddItemDialog from "../common/AddItemDialog";
+    import WaitingForMe from "../common/WaitingForMe";
+    import axios from "axios";
 
     export default {
         name: "SendMailToOneUser",
-        components: {AddItemDialog},
-        comments: {AddItemDialog},
+        components: {AddItemDialog, WaitingForMe},
         data() {
             return {
                 userId: '',
@@ -65,7 +58,12 @@
                 context: '',
                 hasItems: false,
                 items: [],
-                addItemDialogVisible: false
+                addItemDialogVisible: false,
+                waitingDialog: {
+                    visible: false,
+                    message: '',
+                    canClose: false
+                }
             }
         },
         methods: {
@@ -77,6 +75,23 @@
             },
             handleSendMsgClicked(event) {
                 console.log(event);
+                this.waitingDialog.canClose = false
+                this.waitingDialog.visible = true
+                this.waitingDialog.message = "正在执行操作……"
+                axios.post('/api/auth/do_auth', "")
+                    .then(res => {
+                        console.log(res)
+                        if (res.status == 200) {
+                            this.waitingDialog.message = JSON.stringify(res, null, 4)
+                        } else {
+                            this.waitingDialog.message = "登录失败"
+                        }
+                        this.waitingDialog.canClose = true
+                    })
+                    .catch(err => {
+                        this.waitingDialog.message = JSON.stringify(err, null, 4)
+                        this.waitingDialog.canClose = true
+                    })
             }
         },
         computed: {
